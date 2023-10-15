@@ -1315,9 +1315,14 @@ class RegisterViewSet(ModelViewSet):
     serializer_class = UserSerializer
 
     def is_valid_phone_number(self, phone):
-        # Add your custom phone number validation logic here
+    # Check if phone number only contains numbers and optionally starts with '+'
+        if not re.match(r'^\+?[0-9]+$', phone):
+            return False
+
+        # Check if phone number starts with '+' and has a length between 10 and 15
         if not phone.startswith('+') or not (10 <= len(phone) <= 15):
             return False
+
         return True
 
     def send_welcome_notification(self, user):
@@ -1365,6 +1370,10 @@ class RegisterViewSet(ModelViewSet):
         # Validate and sanitize referral code
         if not ref_code:
             return Response({'detail': 'Referral code is required!'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        phone = request.data.get('username', '').strip()  # Replace 'username' with the actual key for phone number if different
+        if not self.is_valid_phone_number(phone):
+            return Response({'detail': 'Invalid phone number provided! Phone number must only contain numbers.'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
