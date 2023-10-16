@@ -28,7 +28,8 @@ urlpatterns = [
 
 
     ######################### adming + housekeeping ############################################
-
+    path('admin-token/', AdminLoginView.as_view(), name='admin_token_obtain_pair'),
+    
     path('users-data/<int:user_id>/', user_detail, name='user-detail'),
 
     path('withdrawals/<int:pk>/', WithdrawalDetail.as_view()),
@@ -48,7 +49,7 @@ urlpatterns = [
     path('change-account-type/<int:user_id>/', ChangeAccountTypeView.as_view(), name='change_account_type'),
 
     path('release-hold-balance/', ReleaseHoldBalanceView.as_view(), name='release_hold_balance'),
-    
+    path('make-user-housekeeping/<int:user_id>/', make_user_housekeeping, name='make-user-housekeeping'),
     path('clear-captchas/', clear_captchas, name='clear_captchas'), 
 
     path('download-tran/', download_transactions, name='download_dat'), 

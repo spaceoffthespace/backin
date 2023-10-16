@@ -90,6 +90,7 @@ def user_detail(request, user_id):
         "date_joined": user.date_joined,
         "last_login_country": user.last_login_country,
         "tasks_left_today": user.tasks_left_today,
+        "role": user.role,
     }
 
     # Serialize tasks and transactions
@@ -1277,6 +1278,32 @@ def delete_transaction_image(request, transaction_id):
 
 
 
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsHR])  # Ensure the user is authenticated and is an HR
+def make_user_housekeeping(request, user_id):
+    new_role = request.data.get('new_role')  # Get the new role from the request data
+
+    # Ensure the new role is either 'user' or 'housekeeping'
+    if new_role not in ['user', 'housekeeping']:
+        return JsonResponse({'error': 'Invalid role assignment'}, status=400)
+
+    try:
+        user = CustomUser.objects.get(id=user_id)
+
+        # If the new role is 'housekeeping', ensure the current role is not 'hr'
+        if new_role == 'housekeeping' and user.role == 'hr':
+            return JsonResponse({'error': 'Cannot change HR to housekeeping'}, status=403)
+        
+        user.role = new_role  # Assign the new role
+        user.save()
+        return JsonResponse({'message': f'User role updated to {new_role} successfully'}, status=200)
+
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 #######housekeeping######
 
 
@@ -1478,8 +1505,20 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
+class AdminLoginView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
 
+        if response.status_code == 200:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = serializer.user
 
+            if user.role not in ['hr', 'housekeeping']:
+                return Response({'detail': 'Invalid credentialss'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+        return response
 
 def get_captcha(request):
     captcha_key = CaptchaStore.generate_key()
