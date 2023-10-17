@@ -105,7 +105,7 @@ class Notification(models.Model):
 class Task(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    task_type = models.CharField(max_length=50)
+    task_type = models.CharField(max_length=265)
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('complete', 'Complete'), ('frozen', 'Frozen')], default='pending')
     commission_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Add the commission field here
