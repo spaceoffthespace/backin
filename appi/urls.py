@@ -56,7 +56,6 @@ urlpatterns = [
     path('delete-image/<int:transaction_id>/', delete_transaction_image, name='delete_image'),
       # Add this line    ########################## user urls #############################
 
-    #when user requests withdraws
     path('get_user_data/', get_user_data, name='get_user_data'),
     
 

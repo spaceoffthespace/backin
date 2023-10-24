@@ -701,6 +701,7 @@ def get_user_data(request):
         'total_earnings': request.user.total_earnings,  # Replace 'balance' with the actual field name in your CustomUser model
         'completed_tasks_count': request.user.completed_tasks_count,  # Added the completed_tasks_count field
         'tasks_left_today': request.user.tasks_left_today,  # Added the completed_tasks_count field
+        'tasks_done_today': request.user.tasks_done_today,  # Added the completed_tasks_count field
         # Add other fields you want to include in the user data response
     }
 
