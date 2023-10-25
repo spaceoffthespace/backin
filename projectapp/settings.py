@@ -94,23 +94,23 @@ WSGI_APPLICATION = 'projectapp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'monmon',  # The name of the database you created in PostgreSQL
-        'USER': 'donthurttherobot',  # The username of the user you created in PostgreSQL
-        'PASSWORD': 'fH8H299X',  # The password for the user
-        'HOST': 'localhost',  # Use 'localhost' if PostgreSQL is on the same machine, otherwise use the IP address or hostname of the machine where PostgreSQL is installed
-        'PORT': '',  # Leave it as an empty string to use the default PostgreSQL port, otherwise specify the port number
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'monmon',  # The name of the database you created in PostgreSQL
+#         'USER': 'donthurttherobot',  # The username of the user you created in PostgreSQL
+#         'PASSWORD': 'fH8H299X',  # The password for the user
+#         'HOST': 'localhost',  # Use 'localhost' if PostgreSQL is on the same machine, otherwise use the IP address or hostname of the machine where PostgreSQL is installed
+#         'PORT': '',  # Leave it as an empty string to use the default PostgreSQL port, otherwise specify the port number
+#     }
+# }
 
 REFERRAL_URL_SETTINGS = {
     'route': 'register',
@@ -231,3 +231,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 
+# Ensure DEBUG is set to False in your settings for production.
+# Use a strong secret key and ensure it's kept confidential.
+# Ensure your application is behind a reverse proxy like NGINX or Apache.
+# Set up HTTPS for security. Certbot with Let's Encrypt provides free SSL certificates.
+# Monitor server and application performance.

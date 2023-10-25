@@ -132,6 +132,23 @@ class Task(models.Model):
 
         super(Task, self).save(*args, **kwargs)
 
+class TaskConfiguration(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name='task_configurations')
+    account_type = models.CharField(max_length=20, choices=[
+        ('bronze', 'Bronze'), 
+        ('silver', 'Silver'),
+        ('gold', 'Gold'),
+        ('platinum', 'Platinum'),
+        ('diamond', 'Diamond')],
+        default='bronze')
+    count = models.PositiveIntegerField(null=True, blank=True)  # For unaffordable tasks
+    price_range_low = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    price_range_high = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    commission_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('user', 'account_type')
+
 
 
 

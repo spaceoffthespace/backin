@@ -6,7 +6,7 @@ from rest_framework import generics
 from datetime import datetime
 import re
 
-from .models import CustomUser, Task, Transaction, Withdrawal, Notification
+from .models import CustomUser, Task, Transaction, Withdrawal, Notification, TaskConfiguration
 from .serializers import *
 from django.utils import timezone
 from datetime import timedelta
@@ -149,6 +149,89 @@ class UnreadNotificationsCount(generics.GenericAPIView):
     
 from decimal import Decimal
 import copy
+from django.db.models import Q
+
+# class FetchProductView(APIView):
+#     permission_classes = [IsAuthenticated]
+#     authentication_classes = [JWTAuthentication]
+
+#     def get(self, request, *args, **kwargs):
+#         user = get_object_or_404(CustomUser, username=self.request.user.username)
+
+#         # Preliminary checks
+#         if user.balance < 20:
+#             return Response({'error_code': 'INSUFFICIENT_BALANCE'}, status=400)
+#         if Task.objects.filter(user=user, status='pending').exists():
+#             return Response({'error_code': 'PENDING_TASK'}, status=400)
+#         if user.tasks_left_today == 0:
+#             return Response({'error_code': 'NO_TASKS_LEFT'}, status=400)
+
+#         products = self._load_products()
+#         user_account_type = user.account_type.capitalize()
+
+#         remaining_products = [product for product in products if product['account_type'] == user_account_type]
+#         if not remaining_products:
+#             return Response({'message': 'No products currently available. Please try again later.'}, status=400)
+
+#         selected_product = self._select_product(user, user_account_type, remaining_products)
+#         if not selected_product:
+#             return Response({'message': 'No suitable product found.'}, status=400)
+
+#         # Create task and update user attributes
+#         task = Task.objects.create(
+#             user=user,
+#             price=selected_product['price'],
+#             task_type=selected_product['title'],
+#             status='pending',
+#             commission_percentage=selected_product['commission_value'],
+#             image=selected_product['image'],
+#             commission=selected_product['commission']
+#         )
+#         user.pending_tasks.add(task)
+#         user.save()
+
+#         return Response({'selected_product': selected_product}, status=200)
+
+#     def _load_products(self):
+#         with open('appi/product_data/products.json', 'r') as file:
+#             return json.load(file)
+
+#     def _select_product(self, user, account_type, products):
+#         completed_tasks_count = user.completed_tasks_current_cycle
+#         matching_config = TaskConfiguration.objects.filter(
+#             Q(user=user) | Q(user__isnull=True),
+#             account_type=account_type,
+#             count=completed_tasks_count
+#         ).first()
+
+#         if not matching_config:  # No unaffordable task matched
+#             matching_config = TaskConfiguration.objects.filter(
+#                 Q(user=user) | Q(user__isnull=True),
+#                 account_type=account_type,
+#                 count__isnull=True
+#             ).first()
+        
+#         if matching_config:
+#             products_in_range = [p for p in products if matching_config.price_range[0] <= p['price'] <= matching_config.price_range[1]]
+            
+#             if products_in_range:
+#                 selected_product = random.choice(products_in_range)
+#                 selected_product = copy.deepcopy(selected_product)
+#                 selected_product['commission_value'] = matching_config.commission_percentage
+#                 selected_product['commission'] = (selected_product['price'] * matching_config.commission_percentage) / 100
+#                 return selected_product
+
+#         return None
+#     def _generate_product_data(self, config, products):
+#         selected_price = Decimal(random.uniform(config.price_range_low, config.price_range_high))
+#         product = random.choice(products)
+#         product = copy.deepcopy(product)
+#         product['price'] = selected_price
+#         product['commission_value'] = config.commission_percentage
+#         product['commission'] = float((selected_price * config.commission_percentage) / 100)
+#         return product
+
+
 class FetchProductView(APIView):
 
     UNAFFORDABLE_TASKS = {
