@@ -376,7 +376,6 @@ class FetchProductView(APIView):
 
 
     # class FetchProductView(APIView):
-
     # # Define the constants for each account type
     # UNAFFORDABLE_TASKS_COUNT_Bronze = 5
     # UNAFFORDABLE_TASKS_PRICE_RANGE_Bronze = (80, 90)
