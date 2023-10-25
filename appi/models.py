@@ -10,7 +10,6 @@ from django.contrib.auth.hashers import make_password
 
 from .utils import generate_ref_code
 from decimal import Decimal
-from ipware import get_client_ip
 
 class CustomUser(AbstractUser):
     
