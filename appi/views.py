@@ -715,10 +715,11 @@ class WithdrawalListCreateView(generics.ListCreateAPIView):
                 'error': 'You have an outstanding hold balance. '
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        if user_profile.tasks_left_today > 0:
+        pending_tasks = Task.objects.filter(user=user_profile, status="pending")
+        if pending_tasks.exists():
             return Response({
-            'error': 'You must finish all available tasks for today before withdrawing.'
-        }, status=status.HTTP_400_BAD_REQUEST)
+                'error': 'You must finish all pending tasks before withdrawing.'
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         return super(WithdrawalListCreateView, self).create(request, *args, **kwargs)
 
