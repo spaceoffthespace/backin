@@ -29,7 +29,8 @@ urlpatterns = [
 
     ######################### adming + housekeeping ############################################
     path('admin-token/', AdminLoginView.as_view(), name='admin_token_obtain_pair'),
-    
+    path('get-user-role/', get_user_role, name='get_user_role'),
+
     path('users-data/<int:user_id>/', user_detail, name='user-detail'),
 
     path('withdrawals/<int:pk>/', WithdrawalDetail.as_view()),
