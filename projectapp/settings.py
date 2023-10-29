@@ -26,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-l*ptv*mmop70zz*zw3s0-x)1z#_wm+a9#bn-pm1sl34dh=jowi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['ns2.certainot.com', 'amazingamazonmall.vercel.app', 'amazingamazonmall-ffc443gnl-moss-projects.vercel.app', '23.254.224.241', '23.254.224.241:8000', 'localhost', '127.0.0.1', 'hwsrv-1105149.hostwindsdns.com']
+ALLOWED_HOSTS = ['ns2.certainot.com', 'amazingamazonmall.vercel.app','f7f452d8de5745db45a9fae7d0ebb8a3.vercel.app', 'amazingamazonmall-ffc443gnl-moss-projects.vercel.app', '23.254.224.241', '23.254.224.241:8000', 'localhost', '127.0.0.1', 'hwsrv-1105149.hostwindsdns.com']
 
 SECRET_KEY = os.urandom(32).hex()
 
@@ -197,6 +197,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://amazingamazonmall-dxyw1f4bj-moss-projects.vercel.app',
     'https://f7f452d8de5745db45a9fae7d0ebb8a3-lz6gnoc7f-moss-projects.vercel.app',
     'https://amazingamazonmall-ffc443gnl-moss-projects.vercel.app',
+    'https://f7f452d8de5745db45a9fae7d0ebb8a3.vercel.app',
 
 ]
 
