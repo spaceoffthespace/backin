@@ -1272,7 +1272,6 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
        
 
     def perform_update(self, serializer):
-        print("Starting perform_update...")
         instance = serializer.save()  # This saves the transaction object and returns the updated instance
 
         # Store the user's current account type
@@ -1296,7 +1295,6 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
         notification_type = "info"
 
         if instance.status == 'approved':
-            print("Transaction approved. Starting transfer...")
           
 
             notification_title = 'Transaction Approved'
