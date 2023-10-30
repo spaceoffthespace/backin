@@ -1229,13 +1229,13 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
         account_hierarchy = ['bronze', 'silver', 'gold', 'platinum', 'diamond']
 
         # Determine the new account type based solely on transaction amount.
-        if 20 <= amount < 50:
+        if 20 <= amount < 100:
             prospective_account_type = 'bronze'
-        elif 100 <= amount < 499:
+        elif 100 <= amount < 500:
             prospective_account_type = 'silver'
-        elif 500 <= amount < 1999:
+        elif 500 <= amount < 2000:
             prospective_account_type = 'gold'
-        elif 2000 <= amount < 9999:
+        elif 2000 <= amount < 10000:
             prospective_account_type = 'platinum'
         elif amount >= 10000:
             prospective_account_type = 'diamond'
@@ -1247,6 +1247,7 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
             return prospective_account_type
         else:
             return current_account_type
+
         
 
 
