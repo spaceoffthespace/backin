@@ -1235,7 +1235,7 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
             prospective_account_type = 'silver'
         elif 500 <= amount < 1999:
             prospective_account_type = 'gold'
-        elif 2000 <= amount < 4999:
+        elif 2000 <= amount < 9999:
             prospective_account_type = 'platinum'
         elif amount >= 10000:
             prospective_account_type = 'diamond'
