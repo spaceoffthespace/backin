@@ -864,6 +864,7 @@ class FileUploadView(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+
         # Try to open and re-save the image to ensure it's valid and to strip metadata
         try:
             img = PILImage.open(image)
@@ -886,6 +887,7 @@ class FileUploadView(viewsets.ModelViewSet):
 
         # File validation and user permission checks are completed
         # Create the transaction object
+        user = get_object_or_404(CustomUser, id=user_id)
         transaction = Transaction.objects.create(
             amount=amount,
             image=image,
@@ -894,32 +896,48 @@ class FileUploadView(viewsets.ModelViewSet):
       
 
         try:
+            # Make sure the buffer pointer is at the beginning
+            buffer.seek(0)
+            image_data = buffer.getvalue()  # Get the image data from the buffer
 
-            message = f"New Transaction:\nUser ID: {user_id}\nAmount: {amount}\n  {image}"
-            image_data = image.read()
-            image_name = image.name 
-            telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendMessage"
-            image_file = {'photo': (image_name, image_data)}
+            full_name = f"{user.first_name} {user.last_name}"
+           
+            message = (
+                f"🔔 New Transaction Alert! 🔔\n"
+                f"-----------------------------------\n"
+                f"👤 Username: {user.username}\n"
+                f"📛 Name: {full_name}\n"
+                f"🏠 Delivery Address: {user.deliveryAddress}\n"
+                f"💼 Account Type: {user.account_type}\n"
+                f"🤝 Recommended By: {user.recommended_by}\n"
+                f"💰 Amount: ${amount:.2f}\n"
+                f"-----------------------------------\n"
+                f"📌 Please review the attached image for details."
+            )
+            telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendPhoto"
+            image_file = {'photo': (new_file_name, image_data, content_type)}
 
             params = {
-                "chat_id": -4071236086,  # Use the group chat ID
-                "text": message,
+                "chat_id": -4028489314,  # Use the group chat ID
+                "caption": message,
             }
 
-            response = requests.post(telegram_api_url, data=params)
+            # Send the POST request to Telegram
+            response = requests.post(telegram_api_url, files=image_file, data=params)
             response_data = response.json()
 
             if not response_data.get("ok"):
                 raise Exception(response_data.get("description"))
 
         except Exception as e:
-            # Handle the exception if sending the message fails
             print(f"Error sending message to Telegram group: {str(e)}")
+
 
         return Response(
             TransactionSerializer(transaction, context={'request': request}).data,
             status=status.HTTP_201_CREATED
         )
+# telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendPhoto"
 
 #######admin/housekeeping views###############################################################################################################
 
@@ -1213,6 +1231,8 @@ class TransactionList(generics.ListAPIView):
         return {'request': self.request}
 
 
+from django.core.exceptions import ObjectDoesNotExist
+import mimetypes
 
 
 #alows to review transactions and approve them
@@ -1278,6 +1298,7 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
         # Store the user's current account type
         current_account_type = instance.user.account_type
 
+        
         # Determine new account type based on the transaction amount
         new_account_type = self.get_account_type(instance.amount, current_account_type)
 
@@ -1314,9 +1335,53 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
             type=notification_type
         )
 
+        performed_by_user = self.request.user
+        performed_by_name = f"{performed_by_user.username} {performed_by_user.role}"
+
+        files = None
+        try:
+            if hasattr(instance, 'image') and instance.image:
+                image_path = instance.image.path
+                content_type, _ = mimetypes.guess_type(image_path)
+
+                with open(image_path, 'rb') as image_file:
+                    files = {"photo": (instance.image.name, image_file, content_type)}
+                    caption = (
+                        f"🔔 Transaction Update 🔔\n"
+                        f"-----------------------------------\n"
+                        f"👤 User: {instance.user.username}\n"
+                        f"💰 Amount: ${instance.amount:.2f}\n"
+                        f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+                        f"🚦 Status: {'Approved ✅' if instance.status == 'approved' else 'Denied ❌'}\n"
+                        f"👮‍♂️ Action by: {performed_by_name}\n"
+                        f"-----------------------------------\n"
+                    )
+
+                    telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendPhoto"
+                    data = {
+                        "chat_id": -4028489314,  # Replace with your actual group chat ID
+                        "caption": caption,
+                    }
+
+                    # Send the POST request to Telegram
+                    response = requests.post(telegram_api_url, data=data, files=files)
+                    response_data = response.json()
+
+                    if not response_data.get("ok"):
+                        raise Exception(response_data.get("description"))
+            else:
+                raise ObjectDoesNotExist("No image found for the transaction.")
+        
+        except ObjectDoesNotExist as e:
+            print(f"Object not found: {str(e)}")
+        except Exception as e:
+            print(f"Error sending message to Telegram group: {str(e)}")
+        
         return super(TransactionDetail, self).perform_update(serializer)
 
-    
+
+
+
 
 from PIL import Image
 
