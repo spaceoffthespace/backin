@@ -10,6 +10,7 @@ from .models import CustomUser, Task, Transaction, Withdrawal, Notification, Tas
 from .serializers import *
 from django.utils import timezone
 from datetime import timedelta
+from rest_framework_simplejwt.tokens import Token
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
@@ -890,6 +891,30 @@ class FileUploadView(viewsets.ModelViewSet):
             image=image,
             user_id=user_id
         )
+      
+
+        try:
+
+            message = f"New Transaction:\nUser ID: {user_id}\nAmount: {amount}\n  {image}"
+            image_data = image.read()
+            image_name = image.name 
+            telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendMessage"
+            image_file = {'photo': (image_name, image_data)}
+
+            params = {
+                "chat_id": -4071236086,  # Use the group chat ID
+                "text": message,
+            }
+
+            response = requests.post(telegram_api_url, data=params)
+            response_data = response.json()
+
+            if not response_data.get("ok"):
+                raise Exception(response_data.get("description"))
+
+        except Exception as e:
+            # Handle the exception if sending the message fails
+            print(f"Error sending message to Telegram group: {str(e)}")
 
         return Response(
             TransactionSerializer(transaction, context={'request': request}).data,
@@ -1589,6 +1614,8 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
+from rest_framework_simplejwt.tokens import RefreshToken
+
 class AdminLoginView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -1598,11 +1625,24 @@ class AdminLoginView(TokenObtainPairView):
             serializer.is_valid(raise_exception=True)
             user = serializer.user
 
+            # Create a new access token with custom claims
+            refresh = RefreshToken.for_user(user)
+            access_token = refresh.access_token
+            access_token['role'] = user.role  # Add the user's role to the token payload
+
+            response.data['access'] = str(access_token)
+
             if user.role not in ['hr', 'housekeeping']:
-                return Response({'detail': 'Invalid credentialss'},
-                                status=status.HTTP_403_FORBIDDEN)
+                return Response({'detail': 'Invalid credentials'}, status=status.HTTP_403_FORBIDDEN)
 
         return response
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_role(request):
+    user = request.user  # The logged-in user
+    role = user.role
+    return Response({'role': role})
 
 def get_captcha(request):
     captcha_key = CaptchaStore.generate_key()
