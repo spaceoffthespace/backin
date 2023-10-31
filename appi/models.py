@@ -219,6 +219,14 @@ class Withdrawal(models.Model):
         super(Withdrawal, self).save(*args, **kwargs)
 
 
+
+class TelegramNotificationConfig(models.Model):
+    send_telegram_notification = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Send Telegram Notifications: {'Enabled' if self.send_telegram_notification else 'Disabled'}"        
+
+
 class HotWallet(models.Model):
     address = models.CharField(max_length=42)
     private_key = models.CharField(max_length=66)  # Do NOT expose this in APIs
