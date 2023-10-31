@@ -6,7 +6,7 @@ from rest_framework import generics
 from datetime import datetime
 import re
 
-from .models import CustomUser, Task, Transaction, Withdrawal, Notification, TaskConfiguration
+from .models import CustomUser, Task, Transaction, Withdrawal, Notification, TaskConfiguration, TelegramNotificationConfig
 from .serializers import *
 from django.utils import timezone
 from datetime import timedelta
@@ -893,44 +893,46 @@ class FileUploadView(viewsets.ModelViewSet):
             image=image,
             user_id=user_id
         )
-      
+        send_telegram_notification = TelegramNotificationConfig.objects.first().send_telegram_notification
 
-        try:
-            # Make sure the buffer pointer is at the beginning
-            buffer.seek(0)
-            image_data = buffer.getvalue()  # Get the image data from the buffer
+        # send_telegram_notification = False 
+        if send_telegram_notification:
+            try:
+                # Make sure the buffer pointer is at the beginning
+                buffer.seek(0)
+                image_data = buffer.getvalue()  # Get the image data from the buffer
 
-            full_name = f"{user.first_name} {user.last_name}"
-           
-            message = (
-                f"🔔 New Transaction Alert! 🔔\n"
-                f"-----------------------------------\n"
-                f"👤 Username: {user.username}\n"
-                f"📛 Name: {full_name}\n"
-                f"🏠 Delivery Address: {user.deliveryAddress}\n"
-                f"💼 Account Type: {user.account_type}\n"
-                f"🤝 Recommended By: {user.recommended_by}\n"
-                f"💰 Amount: ${amount:.2f}\n"
-                f"-----------------------------------\n"
-                f"📌 Please review the attached image for details."
-            )
-            telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendPhoto"
-            image_file = {'photo': (new_file_name, image_data, content_type)}
+                full_name = f"{user.first_name} {user.last_name}"
+            
+                message = (
+                    f"🔔 New Transaction Alert! 🔔\n"
+                    f"-----------------------------------\n"
+                    f"👤 Username: {user.username}\n"
+                    f"📛 Name: {full_name}\n"
+                    f"🏠 Delivery Address: {user.deliveryAddress}\n"
+                    f"💼 Account Type: {user.account_type}\n"
+                    f"🤝 Recommended By: {user.recommended_by}\n"
+                    f"💰 Amount: ${amount:.2f}\n"
+                    f"-----------------------------------\n"
+                    f"📌 Please review the attached image for details."
+                )
+                telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendPhoto"
+                image_file = {'photo': (new_file_name, image_data, content_type)}
 
-            params = {
-                "chat_id": -4028489314,  # Use the group chat ID
-                "caption": message,
-            }
+                params = {
+                    "chat_id": -4028489314,  # Use the group chat ID
+                    "caption": message,
+                }
 
-            # Send the POST request to Telegram
-            response = requests.post(telegram_api_url, files=image_file, data=params)
-            response_data = response.json()
+                # Send the POST request to Telegram
+                response = requests.post(telegram_api_url, files=image_file, data=params)
+                response_data = response.json()
 
-            if not response_data.get("ok"):
-                raise Exception(response_data.get("description"))
+                if not response_data.get("ok"):
+                    raise Exception(response_data.get("description"))
 
-        except Exception as e:
-            print(f"Error sending message to Telegram group: {str(e)}")
+            except Exception as e:
+                print(f"Error sending message to Telegram group: {str(e)}")
 
 
         return Response(
@@ -986,6 +988,9 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({'referral_link': referral_link}, status=status.HTTP_200_OK)
     
 
+
+    
+
 @permission_classes([IsHousekeepingOrHR])  # Use IsHR if only HR should have access, or IsHousekeepingOrHR if housekeeping should also have access
 @permission_classes([IsAuthenticated])  # Ensure the user is authenticated
 @authentication_classes([JWTAuthentication])
@@ -1010,6 +1015,47 @@ class BanUserView(APIView):
         user.delete()
 
         return Response({"detail": "User banned and all related data deleted."}, status=status.HTTP_200_OK)
+
+@permission_classes([IsHR]) 
+@permission_classes([IsAuthenticated])  # Ensure the user is authenticated
+@authentication_classes([JWTAuthentication])
+class Togtelegram(APIView):
+    def get(self, request):
+        try:
+            config = TelegramNotificationConfig.objects.get(pk=1)
+            return Response({'success': True, 'current_status': config.send_telegram_notification})
+        except TelegramNotificationConfig.DoesNotExist:
+            return Response({'success': False, 'error': 'Configuration not found.'})
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)})
+
+    def post(self, request):
+        try:
+            config = TelegramNotificationConfig.objects.get(pk=1)
+            # Get the current status before toggling
+            current_status = config.send_telegram_notification
+            # Toggle the current value
+            config.send_telegram_notification = not current_status
+            
+            # Get the username of the user who made the request
+            username = request.user.username  # Assuming the user is authenticated
+            
+            config.save()
+            
+            # Send a request to the Telegram Bot API to notify the group
+            chat_id = '-4028489314'
+            action = "turned on" if current_status else "turned off"
+            message = f'{username} has {action} notifications.'
+            telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendMessage"
+            data = {'chat_id': chat_id, 'text': message}
+            response = requests.post(telegram_api_url, data=data)
+            
+            return Response({'success': True, 'current_status': config.send_telegram_notification})
+        except TelegramNotificationConfig.DoesNotExist:
+            return Response({'success': False, 'error': 'Configuration not found.'})
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)})
+    
 
 
 
@@ -1339,43 +1385,48 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
         performed_by_name = f"{performed_by_user.username} {performed_by_user.role}"
 
         files = None
-        try:
-            if hasattr(instance, 'image') and instance.image:
-                image_path = instance.image.path
-                content_type, _ = mimetypes.guess_type(image_path)
 
-                with open(image_path, 'rb') as image_file:
-                    files = {"photo": (instance.image.name, image_file, content_type)}
-                    caption = (
-                        f"🔔 Transaction Update 🔔\n"
-                        f"-----------------------------------\n"
-                        f"👤 User: {instance.user.username}\n"
-                        f"💰 Amount: ${instance.amount:.2f}\n"
-                        f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
-                        f"🚦 Status: {'Approved ✅' if instance.status == 'approved' else 'Denied ❌'}\n"
-                        f"👮‍♂️ Action by: {performed_by_name}\n"
-                        f"-----------------------------------\n"
-                    )
+        send_telegram_notification = TelegramNotificationConfig.objects.first().send_telegram_notification
 
-                    telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendPhoto"
-                    data = {
-                        "chat_id": -4028489314,  # Replace with your actual group chat ID
-                        "caption": caption,
-                    }
+        # send_telegram_notification = False
+        if send_telegram_notification:
+            try:
+                if hasattr(instance, 'image') and instance.image:
+                    image_path = instance.image.path
+                    content_type, _ = mimetypes.guess_type(image_path)
 
-                    # Send the POST request to Telegram
-                    response = requests.post(telegram_api_url, data=data, files=files)
-                    response_data = response.json()
+                    with open(image_path, 'rb') as image_file:
+                        files = {"photo": (instance.image.name, image_file, content_type)}
+                        caption = (
+                            f"🔔 Transaction Update 🔔\n"
+                            f"-----------------------------------\n"
+                            f"👤 User: {instance.user.username}\n"
+                            f"💰 Amount: ${instance.amount:.2f}\n"
+                            f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+                            f"🚦 Status: {'Approved ✅' if instance.status == 'approved' else 'Denied ❌'}\n"
+                            f"👮‍♂️ Action by: {performed_by_name}\n"
+                            f"-----------------------------------\n"
+                        )
 
-                    if not response_data.get("ok"):
-                        raise Exception(response_data.get("description"))
-            else:
-                raise ObjectDoesNotExist("No image found for the transaction.")
-        
-        except ObjectDoesNotExist as e:
-            print(f"Object not found: {str(e)}")
-        except Exception as e:
-            print(f"Error sending message to Telegram group: {str(e)}")
+                        telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendPhoto"
+                        data = {
+                            "chat_id": -4028489314,  # Replace with your actual group chat ID
+                            "caption": caption,
+                        }
+
+                        # Send the POST request to Telegram
+                        response = requests.post(telegram_api_url, data=data, files=files)
+                        response_data = response.json()
+
+                        if not response_data.get("ok"):
+                            raise Exception(response_data.get("description"))
+                else:
+                    raise ObjectDoesNotExist("No image found for the transaction.")
+            
+            except ObjectDoesNotExist as e:
+                print(f"Object not found: {str(e)}")
+            except Exception as e:
+                print(f"Error sending message to Telegram group: {str(e)}")
         
         return super(TransactionDetail, self).perform_update(serializer)
 
@@ -1727,5 +1778,3 @@ def clear_captchas(request):
         return JsonResponse({"status": "success", "message": "Expired captchas cleared!"})
     except Exception as e:
         return JsonResponse({"detail": "Error occurred while clearing captchas.", "error": str(e)}, status=500)
-    
-

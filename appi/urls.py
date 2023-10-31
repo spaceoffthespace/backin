@@ -34,7 +34,9 @@ urlpatterns = [
     path('users-data/<int:user_id>/', user_detail, name='user-detail'),
 
     path('withdrawals/<int:pk>/', WithdrawalDetail.as_view()),
-    
+   
+    path('toggle_telegram_notification/', Togtelegram.as_view(), name='toggle_telegram_notification'),
+   
     path('transactions/<int:pk>/', TransactionDetail.as_view()),
     path('transactions/', TransactionList.as_view()),
 
