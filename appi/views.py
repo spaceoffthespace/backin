@@ -1044,7 +1044,7 @@ class Togtelegram(APIView):
             
             # Send a request to the Telegram Bot API to notify the group
             chat_id = '-4028489314'
-            action = "turned on" if current_status else "turned off"
+            action = "turned off" if current_status else "turned on"
             message = f'{username} has {action} notifications.'
             telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendMessage"
             data = {'chat_id': chat_id, 'text': message}
