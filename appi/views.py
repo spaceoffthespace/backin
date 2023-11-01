@@ -843,7 +843,7 @@ class FileUploadView(viewsets.ModelViewSet):
             raise ValidationError("Invalid amount.")
 
         # Validate the image extension using Django's validator
-        validator = FileExtensionValidator(allowed_extensions=['png', 'jpg'])
+        validator = FileExtensionValidator(allowed_extensions=['png', 'jpg', 'jpeg'])
         validator(image)
 
         # Validate the image's content type
