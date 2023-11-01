@@ -322,7 +322,6 @@ class FetchProductView(APIView):
         selected_product = None
         for level, task_data in sorted(account_data.items()):
             if completed_tasks_count == task_data["count"]:
-                print("DEBUG: Choosing Unaffordable Task")
 
                 # Randomly select a price within the given range
                 selected_price = Decimal(random.uniform(*task_data['price_range']))
@@ -339,7 +338,7 @@ class FetchProductView(APIView):
                 break
 
         if not selected_product:
-            print("DEBUG: Choosing Affordable Task")
+           
             affordable_data = self.AFFORDABLE_TASKS.get(user_account_type)
 
             # Randomly select a price within the given range
