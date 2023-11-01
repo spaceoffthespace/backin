@@ -236,34 +236,34 @@ from django.db.models import Q
 class FetchProductView(APIView):
 
     UNAFFORDABLE_TASKS = {
-        "Bronze": {
-            1: {"count":10, "price_range": (95, 98), "commission_percentage": 5},
-            2: {"count":25, "price_range": (190, 199), "commission_percentage": 15},
-            3: {"count":40, "price_range": (350, 430), "commission_percentage": 10}, 
-            4: {"count":55, "price_range": (300, 330), "commission_percentage": 5}, 
-        },
-        "Silver": {
-            1: {"count": 10, "price_range": (400, 450), "commission_percentage": 5},
-            2: {"count": 29, "price_range": (900, 1200), "commission_percentage": 5},
-            3: {"count": 50, "price_range": (1500, 2100), "commission_percentage": 5}
-        },
-        "Gold": {
-            1: {"count": 23, "price_range": (3450, 3300), "commission_percentage": 5},
-            2: {"count": 42, "price_range": (5401, 5999), "commission_percentage": 10},
-            3: {"count": 55, "price_range": (8100, 8600), "commission_percentage": 10}
-        },
-        "Platinum": {
-            1: {"count": 15, "price_range": (2000, 4900), "commission_percentage": 7},
-            2: {"count": 30, "price_range": (5000, 9900), "commission_percentage": 7}
-        },
-        "Diamond": {
-            1: {"count": 25, "price_range": (15000, 19500), "commission_percentage": 10},
-            2: {"count": 35, "price_range": (20000, 49000), "commission_percentage": 10}
+            "Bronze": {
+                1: {"count":10, "price_range": (95, 98), "commission_percentage": 5},
+                2: {"count":25, "price_range": (190, 199), "commission_percentage": 15},
+                3: {"count":40, "price_range": (350, 430), "commission_percentage": 10}, 
+                4: {"count":55, "price_range": (300, 330), "commission_percentage": 5}, 
+            },
+            "Silver": {
+                1: {"count": 10, "price_range": (400, 450), "commission_percentage": 5},
+                2: {"count": 29, "price_range": (900, 1200), "commission_percentage": 5},
+                3: {"count": 50, "price_range": (1500, 2100), "commission_percentage": 5}
+            },
+            "Gold": {
+                1: {"count": 23, "price_range": (3450, 3300), "commission_percentage": 5},
+                2: {"count": 42, "price_range": (5401, 5999), "commission_percentage": 10},
+                3: {"count": 55, "price_range": (8100, 8600), "commission_percentage": 10}
+            },
+            "Platinum": {
+                1: {"count": 15, "price_range": (8500, 10900), "commission_percentage": 7},
+                2: {"count": 30, "price_range": (20000, 22000), "commission_percentage": 7}
+            },
+            "Diamond": {
+                1: {"count": 25, "price_range": (15000, 19500), "commission_percentage": 10},
+                2: {"count": 35, "price_range": (20000, 49000), "commission_percentage": 10}
+            }
         }
-    }
 
 
-    #will find task, if user has not
+ #will find task, if user has not
     AFFORDABLE_TASKS = {
     "Bronze": {
         "price_range": (1.14, 4.85), 
@@ -278,8 +278,8 @@ class FetchProductView(APIView):
         "commission_percentage": 5
     },
     "Platinum": {
-        "price_range": (950, 2500), 
-        "commission_percentage": 15
+        "price_range": (650, 1400), 
+        "commission_percentage": 9
     },
     "Diamond": {
         "price_range": (3000, 10000), 

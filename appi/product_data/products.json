@@ -1176,7 +1176,7 @@
         "commission": "942.11",
         "commission_value": "9.06",
         "image": "https://images-na.ssl-images-amazon.com/images/I/71kuMbOOMpL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 132,
@@ -1716,7 +1716,7 @@
         "commission": "296.40",
         "commission_value": "9.45",
         "image": "https://images-na.ssl-images-amazon.com/images/I/71zgjXPB8EL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 192,
@@ -1797,7 +1797,7 @@
         "commission": "0.59",
         "commission_value": "0.39",
         "image": "https://m.media-amazon.com/images/I/71diewkRSZL._AC_UL320_.jpg",
-        "account_type": "Gold"
+        "account_type": "Platinum"
     },
     {
         "id": 201,
@@ -1807,15 +1807,6 @@
         "commission_value": "9.24",
         "image": "https://m.media-amazon.com/images/I/71diewkRSZL._AC_UL320_.jpg",
         "account_type": "Diamond"
-    },
-    {
-        "id": 202,
-        "title": "Rolex Submariner Yellow Gold Watch Black Dial Watch 116618",
-        "price": "172.69",
-        "commission": "0.73",
-        "commission_value": "0.42",
-        "image": "https://m.media-amazon.com/images/I/71O1Tih1uaL._AC_UL320_.jpg",
-        "account_type": "Gold"
     },
     {
         "id": 203,
@@ -2166,7 +2157,7 @@
         "commission": "1.61",
         "commission_value": "0.25",
         "image": "https://images-na.ssl-images-amazon.com/images/I/810yYOKmLfL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 242,
@@ -2256,7 +2247,7 @@
         "commission": "1244.70",
         "commission_value": "9.52",
         "image": "https://images-na.ssl-images-amazon.com/images/I/71bH8kdkQmL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 252,
@@ -2976,7 +2967,7 @@
         "commission": "42.66",
         "commission_value": "9.04",
         "image": "https://images-na.ssl-images-amazon.com/images/I/71UwLJqaVCL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Gold"
     },
     {
         "id": 332,
@@ -4866,7 +4857,7 @@
         "commission": "981.93",
         "commission_value": "9.68",
         "image": "https://images-na.ssl-images-amazon.com/images/I/81QpkIctqPL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Gold"
     },
     {
         "id": 542,
@@ -4956,7 +4947,7 @@
         "commission": "52.46",
         "commission_value": "9.51",
         "image": "https://images-na.ssl-images-amazon.com/images/I/81BG8SxTzSL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 552,
@@ -5226,7 +5217,7 @@
         "commission": "212.53",
         "commission_value": "9.45",
         "image": "https://images-na.ssl-images-amazon.com/images/I/81ii84qJc6L._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Bronze"
     },
     {
         "id": 582,
@@ -5316,7 +5307,7 @@
         "commission": "1.55",
         "commission_value": "0.23",
         "image": "https://images-na.ssl-images-amazon.com/images/I/61A%2BK1MjTeL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 592,
@@ -5488,15 +5479,6 @@
         "commission_value": "0.33",
         "image": "https://images-na.ssl-images-amazon.com/images/I/610q2L6e6wS._AC_UL200_SR200,200_.jpg",
         "account_type": "Gold"
-    },
-    {
-        "id": 611,
-        "title": "Vitakraft Nibble Rings-10.6 oz",
-        "price": "13420.92",
-        "commission": "1257.70",
-        "commission_value": "9.37",
-        "image": "https://images-na.ssl-images-amazon.com/images/I/812K1EVISeL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
     },
     {
         "id": 613,
@@ -6567,7 +6549,7 @@
         "commission": "1485.94",
         "commission_value": "9.69",
         "image": "https://images-na.ssl-images-amazon.com/images/I/71zWWzVvSLL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 732,
@@ -7371,15 +7353,6 @@
         "account_type": "Silver"
     },
     {
-        "id": 821,
-        "title": "Lion Brand Yarn Basic Stitch Anti Pilling Skein Tones Yarn, 1 Pack, Adobe",
-        "price": "671.24",
-        "commission": "2.62",
-        "commission_value": "0.39",
-        "image": "https://images-na.ssl-images-amazon.com/images/I/91ee38P3OFL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
-    },
-    {
         "id": 822,
         "title": "Trapped in a Video Game: The Complete Series",
         "price": "61.75",
@@ -7460,15 +7433,7 @@
         "image": "https://images-na.ssl-images-amazon.com/images/I/61ZYbtIxk-S._AC_UL200_SR200,200_.jpg",
         "account_type": "Silver"
     },
-    {
-        "id": 831,
-        "title": "DANCO Waterproof Silicone Faucet Grease | Silicone Sealant | Plumbers valve Grease for O-rings | 0.5 oz. | 1-Pack (88693)",
-        "price": "493.92",
-        "commission": "1.02",
-        "commission_value": "0.21",
-        "image": "https://images-na.ssl-images-amazon.com/images/I/61SDNOQfj4L._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
-    },
+
     {
         "id": 832,
         "title": "Beistle Pin The Eyeball On The Zombie Games - 1 Pc",
@@ -8457,7 +8422,7 @@
         "commission": "1641.00",
         "commission_value": "9.44",
         "image": "https://images-na.ssl-images-amazon.com/images/I/810UpRxkd3L._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Silver"
     },
     {
         "id": 942,
@@ -9442,12 +9407,12 @@
     },
     {
         "id": 1051,
-        "title": "(Renewed) Apple iPhone 8, Fully Unlocked, 256GB - Gold",
+        "title": "Apple iPhone 15, 1TB - Gold",
         "price": "17754.63",
         "commission": "1743.60",
         "commission_value": "9.82",
         "image": "https://images-na.ssl-images-amazon.com/images/I/71tAvWRiz-L._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 1052,
@@ -9799,15 +9764,6 @@
         "commission_value": "0.48",
         "image": "https://images-na.ssl-images-amazon.com/images/I/81D4HhGRe9L._AC_UL200_SR200,200_.jpg",
         "account_type": "Gold"
-    },
-    {
-        "id": 1091,
-        "title": "Vitakraft Nibble Rings-10.6 oz",
-        "price": "565.57",
-        "commission": "0.39",
-        "commission_value": "0.07",
-        "image": "https://images-na.ssl-images-amazon.com/images/I/812K1EVISeL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
     },
     {
         "id": 1092,
@@ -10527,7 +10483,7 @@
         "commission": "1744.75",
         "commission_value": "9.34",
         "image": "https://images-na.ssl-images-amazon.com/images/I/81091yWtZbL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "silver"
     },
     {
         "id": 1172,
@@ -10789,15 +10745,6 @@
         "commission_value": "0.45",
         "image": "https://images-na.ssl-images-amazon.com/images/I/71J9TY4UOYL._AC_UL200_SR200,200_.jpg",
         "account_type": "Silver"
-    },
-    {
-        "id": 1201,
-        "title": "Melissa &amp; Doug Scissor Skills Activity Book With Pair of Child-Safe Scissors (20 Pages)",
-        "price": "18564.46",
-        "commission": "1711.07",
-        "commission_value": "9.22",
-        "image": "https://images-na.ssl-images-amazon.com/images/I/81091yWtZbL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
     },
     {
         "id": 1202,
@@ -11157,7 +11104,7 @@
         "commission": "1897.23",
         "commission_value": "9.84",
         "image": "https://images-na.ssl-images-amazon.com/images/I/515hIjHf47L._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 1242,
@@ -11787,7 +11734,7 @@
         "commission": "1832.87",
         "commission_value": "9.49",
         "image": "https://images-na.ssl-images-amazon.com/images/I/81aM%2BDhxF2S._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 1312,
@@ -12327,7 +12274,7 @@
         "commission": "1786.97",
         "commission_value": "9.65",
         "image": "https://images-na.ssl-images-amazon.com/images/I/51vK6PQS98L._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Bronze"
     },
     {
         "id": 1372,
@@ -13047,7 +12994,7 @@
         "commission": "1018.19",
         "commission_value": "9.38",
         "image": "https://images-na.ssl-images-amazon.com/images/I/815lyHDo90L._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Gold"
     },
     {
         "id": 1452,
@@ -13671,15 +13618,6 @@
         "account_type": "Gold"
     },
     {
-        "id": 1521,
-        "title": "Fortinet FortiGate-60E License 1 YR 24X7 FortiCare UTM Protection FC-10-0060E-950-02-12",
-        "price": "17440.06",
-        "commission": "1714.31",
-        "commission_value": "9.83",
-        "image": "https://images-na.ssl-images-amazon.com/images/I/61dwSsDealL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
-    },
-    {
         "id": 1522,
         "title": "BLACK+DECKER BPWM16W Portable Washer, White",
         "price": "120.51",
@@ -13857,7 +13795,7 @@
         "commission": "1076.44",
         "commission_value": "9.65",
         "image": "https://images-na.ssl-images-amazon.com/images/I/716cJytGE5L._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 1542,
@@ -14479,15 +14417,6 @@
         "commission_value": "0.37",
         "image": "https://images-na.ssl-images-amazon.com/images/I/71hBf81GDCL._AC_UL200_SR200,200_.jpg",
         "account_type": "Gold"
-    },
-    {
-        "id": 1611,
-        "title": "Original HP 962 Black, Cyan, Magenta, Yellow Ink Cartridges (4-pack) | Works with HP OfficeJet 9010 Series, HP OfficeJet Pro 9010, 9020 Series | Eligible for Instant Ink | 3YQ25AN",
-        "price": "12901.58",
-        "commission": "1240.31",
-        "commission_value": "9.61",
-        "image": "https://images-na.ssl-images-amazon.com/images/I/71Ds3-hHqpS._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
     },
     {
         "id": 1612,
@@ -15472,12 +15401,12 @@
     },
     {
         "id": 1721,
-        "title": "Office Home and Student 2019 DVD | New | Box | DVD | KeyCard- Office 2019 Home &amp; Student | Full Retail Pack With DVD Driver | For 1 PC | Lifetime License",
+        "title": "Office Home and Student 2023 DVD | New | Box | DVD | KeyCard- Office 2023 Home &amp; Student | Full Retail Pack With DVD Driver | For 1 PC | Lifetime License",
         "price": "504.51",
         "commission": "0.43",
         "commission_value": "0.09",
         "image": "https://images-na.ssl-images-amazon.com/images/I/71y4soisNoL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Bronze"
     },
     {
         "id": 1722,
@@ -16737,7 +16666,7 @@
         "commission": "1558.05",
         "commission_value": "9.87",
         "image": "https://m.media-amazon.com/images/I/71r5254QPZL._AC_UY218_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 1862,
@@ -17007,7 +16936,7 @@
         "commission": "1973.79",
         "commission_value": "9.96",
         "image": "https://images-na.ssl-images-amazon.com/images/I/717VgTTRKXL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 1892,
@@ -17187,7 +17116,7 @@
         "commission": "2.08",
         "commission_value": "0.35",
         "image": "https://images-na.ssl-images-amazon.com/images/I/416GixqcRHL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Silver"
     },
     {
         "id": 1912,
@@ -17367,7 +17296,7 @@
         "commission": "320.80",
         "commission_value": "9.99",
         "image": "https://images-na.ssl-images-amazon.com/images/I/51HO-2BUgSL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Bronze"
     },
     {
         "id": 1932,
@@ -18537,7 +18466,7 @@
         "commission": "1809.80",
         "commission_value": "9.60",
         "image": "https://images-na.ssl-images-amazon.com/images/I/61n1gXdPATL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Gold"
     },
     {
         "id": 2062,
@@ -19887,7 +19816,7 @@
         "commission": "1.68",
         "commission_value": "0.28",
         "image": "https://images-na.ssl-images-amazon.com/images/I/61ykKLbddNL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 2212,
@@ -20157,7 +20086,7 @@
         "commission": "4001.05",
         "commission_value": "9.92",
         "image": "https://images-na.ssl-images-amazon.com/images/I/61TwT-PGiUL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Bronze"
     },
     {
         "id": 2242,
@@ -20337,7 +20266,7 @@
         "commission": "1060.86",
         "commission_value": "9.78",
         "image": "https://images-na.ssl-images-amazon.com/images/I/61L6clXivsL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Gold"
     },
     {
         "id": 2262,
@@ -21507,7 +21436,7 @@
         "commission": "31.86",
         "commission_value": "9.52",
         "image": "https://m.media-amazon.com/images/I/71ep0VfsjOL._AC_UL320_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 2392,
@@ -21597,7 +21526,7 @@
         "commission": "1812.24",
         "commission_value": "9.99",
         "image": "https://images-na.ssl-images-amazon.com/images/I/61UJcleldJL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 2402,
@@ -22668,7 +22597,7 @@
         "commission": "2777.50",
         "commission_value": "9.96",
         "image": "https://images-na.ssl-images-amazon.com/images/I/81gH2ZMGcFL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 2522,
@@ -23118,7 +23047,7 @@
         "commission": "2363.25",
         "commission_value": "9.91",
         "image": "https://images-na.ssl-images-amazon.com/images/I/61O7HHu181L._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Silver"
     },
     {
         "id": 2572,
@@ -23208,7 +23137,7 @@
         "commission": "2178.18",
         "commission_value": "9.60",
         "image": "https://images-na.ssl-images-amazon.com/images/I/41ChFDik64L._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 2582,
@@ -23838,7 +23767,7 @@
         "commission": "4654.02",
         "commission_value": "9.89",
         "image": "https://images-na.ssl-images-amazon.com/images/I/61IYYoZ66VL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 2652,
@@ -25098,7 +25027,7 @@
         "commission": "3283.35",
         "commission_value": "9.93",
         "image": "https://images-na.ssl-images-amazon.com/images/I/71RM4QwY7GL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 2792,
@@ -25728,7 +25657,7 @@
         "commission": "0.79",
         "commission_value": "0.11",
         "image": "https://images-na.ssl-images-amazon.com/images/I/815lyHDo90L._AC_UL200_SR200,200_.jpg",
-        "account_type": "Diamond"
+        "account_type": "Platinum"
     },
     {
         "id": 2862,
@@ -81817,7 +81746,7 @@
         "commission": "1.04",
         "commission_value": "0.19",
         "image": "https://images-na.ssl-images-amazon.com/images/I/61zbq5zzXfL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Platinum"
+        "account_type": "silver"
     },
     {
         "id": 9132,
@@ -82015,7 +81944,7 @@
         "commission": "0.35",
         "commission_value": "0.43",
         "image": "https://images-na.ssl-images-amazon.com/images/I/71bI8AeHyNL._AC_UL200_SR200,200_.jpg",
-        "account_type": "Silver"
+        "account_type": "Platinum"
     },
     {
         "id": 9154,
