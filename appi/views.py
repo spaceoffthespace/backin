@@ -232,7 +232,8 @@ from django.db.models import Q
 #         product['commission'] = float((selected_price * config.commission_percentage) / 100)
 #         return product
 
-
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
 class FetchProductView(APIView):
 
  
@@ -289,6 +290,14 @@ class FetchProductView(APIView):
     },
     
 }
+    RANKS = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond']
+    def get_next_rank(self, current_rank):
+        try:
+            current_index = self.RANKS.index(current_rank)
+            # If it's not Diamond, get the next rank; else, Diamond is the highest rank, so stay there.
+            return self.RANKS[current_index + 1 if current_index + 1 < len(self.RANKS) else current_index]
+        except ValueError:
+            raise ValueError(f"Unknown rank: {current_rank}")
 
     @permission_classes([IsAuthenticated])
     @authentication_classes([JWTAuthentication])
@@ -310,6 +319,9 @@ class FetchProductView(APIView):
 
         user_account_type = user.account_type.capitalize()
         completed_tasks_count = user.completed_tasks_current_cycle
+        
+        next_rank = self.get_next_rank(user_account_type) if user_account_type != 'Diamond' else 'Diamond'
+        next_rank_products = [product for product in data if product['account_type'] == next_rank]
 
         # Filter out products based on the user's account type
         remaining_products = [product for product in data if product['account_type'] == user_account_type]
@@ -324,19 +336,21 @@ class FetchProductView(APIView):
         selected_product = None
         for level, task_data in sorted(account_data.items()):
             if completed_tasks_count == task_data["count"]:
+                # Choose from next rank's products if available, otherwise use the remaining products from the current rank
+                relevant_products = next_rank_products if next_rank_products else remaining_products
 
                 # Randomly select a price within the given range
                 selected_price = Decimal(random.uniform(*task_data['price_range']))
 
-                # Selecting a random product within the remaining products
-                selected_product = random.choice(remaining_products)
+                # Selecting a random product within the relevant products
+                selected_product = random.choice(relevant_products)
                 selected_product = copy.deepcopy(selected_product)
                 selected_product['price'] = selected_price
                 selected_product['commission_value'] = task_data['commission_percentage']
                 selected_product['commission'] = (selected_price * task_data['commission_percentage']) / 100
 
-                user.completed_tasks_count += 1  # Update the completed task count
-                user.completed_tasks_current_cycle  += 1  # Update the completed task count
+                user.completed_tasks_count += 1
+                user.completed_tasks_current_cycle += 1
                 break
 
         if not selected_product:
@@ -375,7 +389,6 @@ class FetchProductView(APIView):
         }
 
         return Response({'selected_product': product_detail}, status=200)
-
 
     # class FetchProductView(APIView):
     # # Define the constants for each account type
