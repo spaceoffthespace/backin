@@ -235,6 +235,7 @@ from django.db.models import Q
 
 class FetchProductView(APIView):
 
+ 
     UNAFFORDABLE_TASKS = {
             "Bronze": {
                 1: {"count":10, "price_range": (95, 98), "commission_percentage": 5},
@@ -261,6 +262,7 @@ class FetchProductView(APIView):
                 2: {"count": 35, "price_range": (20000, 49000), "commission_percentage": 10}
             }
         }
+
 
 
  #will find task, if user has not
@@ -1636,8 +1638,8 @@ class RegisterViewSet(ModelViewSet):
             user.password = make_password(request.data['password'])  # Hash the password
 
         # You can access the client's IP address from the request object directly
-        client_ip = request.META.get('REMOTE_ADDR')
-        user.register_ip = client_ip
+        user.register_ip = request.data.get('register_ip')
+
 
         user.save()
         self.send_welcome_notification(user)
