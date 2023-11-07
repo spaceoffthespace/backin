@@ -1002,7 +1002,16 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({'referral_link': referral_link}, status=status.HTTP_200_OK)
     
 
+@permission_classes([IsHousekeepingOrHR])  # Use IsHR if only HR should have access, or IsHousekeepingOrHR if housekeeping should also have access
+@permission_classes([IsAuthenticated])  # Ensure the user is authenticated
+@authentication_classes([JWTAuthentication])
+class InvitedUsersViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = UserSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+        # Assuming 'code' is a unique identifier for each user
+        return CustomUser.objects.filter(recommended_by=user)
     
 
 @permission_classes([IsHousekeepingOrHR])  # Use IsHR if only HR should have access, or IsHousekeepingOrHR if housekeeping should also have access
@@ -1290,10 +1299,31 @@ class TransactionList(generics.ListAPIView):
     def get_serializer_context(self):
         return {'request': self.request}
 
+@permission_classes([IsAuthenticated, IsHousekeepingOrHR])
+@authentication_classes([JWTAuthentication])
+class InvitedUsersTransactionsList(generics.ListAPIView):
+    serializer_class = TransactionSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsHousekeepingOrHR]
 
+    def get_queryset(self):
+        # Get the current logged-in user
+        user = self.request.user
+
+        # Get all users invited by the logged-in user
+        invited_users = CustomUser.objects.filter(recommended_by=user)
+
+        # Now, get all transactions related to the invited users
+        invited_users_transactions = Transaction.objects.filter(user__in=invited_users)
+        return invited_users_transactions
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+    
 from django.core.exceptions import ObjectDoesNotExist
 import mimetypes
 
+from rest_framework.exceptions import PermissionDenied
 
 #alows to review transactions and approve them
 
@@ -1353,6 +1383,13 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
        
 
     def perform_update(self, serializer):
+        transaction = self.get_object()
+        user = self.request.user
+        if transaction.user.recommended_by != user and user.role != 'hr':
+            # If not, raise a permission denied exception
+            raise PermissionDenied('You do not have permission to modify this transaction.')
+
+
         instance = serializer.save()  # This saves the transaction object and returns the updated instance
 
         # Store the user's current account type
