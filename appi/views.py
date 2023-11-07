@@ -259,7 +259,7 @@ class FetchProductView(APIView):
                 2: {"count": 30, "price_range": (20000, 22000), "commission_percentage": 7}
             },
             "Diamond": {
-                1: {"count": 25, "price_range": (15000, 19500), "commission_percentage": 10},
+                1: {"count": 5, "price_range": (15000, 19500), "commission_percentage": 10},
                 2: {"count": 35, "price_range": (20000, 49000), "commission_percentage": 10}
             }
         }
@@ -303,6 +303,8 @@ class FetchProductView(APIView):
     @authentication_classes([JWTAuthentication])
     def get(self, request, *args, **kwargs):
         user = get_object_or_404(CustomUser, username=self.request.user.username)
+        buffer_amount = user.balance * Decimal('0.20')
+        max_affordable_price = user.balance + buffer_amount  # User's balance plus 20%
 
         # Preliminary checks
         if user.balance < 20:
@@ -334,24 +336,20 @@ class FetchProductView(APIView):
             raise ValueError(f"Unknown account type: {user_account_type}")
 
         selected_product = None
-        for level, task_data in sorted(account_data.items()):
+        for level, task_data in account_data.items():
             if completed_tasks_count == task_data["count"]:
-                # Choose from next rank's products if available, otherwise use the remaining products from the current rank
-                relevant_products = next_rank_products if next_rank_products else remaining_products
-
-                # Randomly select a price within the given range
+                price_lower_bound, price_upper_bound = task_data['price_range']
                 selected_price = Decimal(random.uniform(*task_data['price_range']))
-
-                # Selecting a random product within the relevant products
+                # If the user can afford it, make it unaffordable
+                if selected_price <= max_affordable_price:
+                    selected_price = max_affordable_price + buffer_amount
+                relevant_products = next_rank_products if next_rank_products else remaining_products
                 selected_product = random.choice(relevant_products)
                 selected_product = copy.deepcopy(selected_product)
                 selected_product['price'] = selected_price
                 selected_product['commission_value'] = task_data['commission_percentage']
                 selected_product['commission'] = (selected_price * task_data['commission_percentage']) / 100
-
-                user.completed_tasks_count += 1
-                user.completed_tasks_current_cycle += 1
-                break
+                break  # Exit loop as we have selected a product
 
         if not selected_product:
            
