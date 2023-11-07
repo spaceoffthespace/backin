@@ -8,6 +8,8 @@ router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
 router.register(r'register', RegisterViewSet, basename='register')
 router.register(r'upload', FileUploadView, basename='upload')  # Add this line
+router.register(r'invited-users', InvitedUsersViewSet, basename='invi')
+
 
 
 
@@ -39,6 +41,9 @@ urlpatterns = [
    
     path('transactions/<int:pk>/', TransactionDetail.as_view()),
     path('transactions/', TransactionList.as_view()),
+
+    path('invited-users-transactions/', InvitedUsersTransactionsList.as_view(), name='invited-users-transactions'),
+
 
     path('withdrawal-update/', hr_manage_withdrawal, name='update-withdrawal'),
 
