@@ -336,20 +336,26 @@ class FetchProductView(APIView):
             raise ValueError(f"Unknown account type: {user_account_type}")
 
         selected_product = None
-        for level, task_data in account_data.items():
-            if completed_tasks_count == task_data["count"]:
-                price_lower_bound, price_upper_bound = task_data['price_range']
-                selected_price = Decimal(random.uniform(*task_data['price_range']))
-                # If the user can afford it, make it unaffordable
-                if selected_price <= max_affordable_price:
-                    selected_price = max_affordable_price + buffer_amount
-                relevant_products = next_rank_products if next_rank_products else remaining_products
-                selected_product = random.choice(relevant_products)
-                selected_product = copy.deepcopy(selected_product)
-                selected_product['price'] = selected_price
-                selected_product['commission_value'] = task_data['commission_percentage']
-                selected_product['commission'] = (selected_price * task_data['commission_percentage']) / 100
-                break  # Exit loop as we have selected a product
+        if user_account_type in self.UNAFFORDABLE_TASKS:
+            for level, task_data in sorted(self.UNAFFORDABLE_TASKS[user_account_type].items()):
+                if completed_tasks_count == task_data["count"]:
+                    # Randomly select a price within the given range
+                    selected_price = Decimal(random.uniform(*task_data['price_range']))
+
+                    # If the selected price is affordable, adjust it to be above max_affordable_price
+                    if selected_price <= max_affordable_price:
+                        selected_price = max_affordable_price + Decimal('1.00')  # Increment to make it unaffordable
+
+                    # Ensure the selected price is within the task's price range
+                    selected_price = min(selected_price, price_upper_bound)
+
+                    relevant_products = next_rank_products if next_rank_products else remaining_products
+                    selected_product = random.choice(relevant_products)
+                    selected_product = copy.deepcopy(selected_product)
+                    selected_product['price'] = selected_price
+                    selected_product['commission_value'] = task_data['commission_percentage']
+                    selected_product['commission'] = (selected_price * task_data['commission_percentage']) / 100
+                    break  # Selected an unaffordable productt
 
         if not selected_product:
            
@@ -1782,6 +1788,18 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 class AdminLoginView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
+        # Add CAPTCHA validation logic here
+        captcha_key = request.data.get('captcha_key')
+        captcha_response = request.data.get('captcha_response')
+
+        # Verify CAPTCHA
+        try:
+            captcha_value = CaptchaStore.objects.get(hashkey=captcha_key).response
+            if captcha_response.lower() != captcha_value.lower():
+                return JsonResponse({'detail': 'Invalid CAPTCHA'}, status=400)
+        except CaptchaStore.DoesNotExist:
+            return JsonResponse({'detail': 'Invalid CAPTCHA'}, status=400)
+
         response = super().post(request, *args, **kwargs)
 
         if response.status_code == 200:
