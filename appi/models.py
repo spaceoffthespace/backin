@@ -59,6 +59,8 @@ class CustomUser(AbstractUser):
         if self.last_task_completion_date != timezone.localdate():
             self.last_task_completion_date = timezone.localdate()
             self.tasks_done_today = 0
+            self.completed_tasks_current_cycle = 0
+
             
             if self.account_type == 'bronze':
                 self.tasks_left_today = 60

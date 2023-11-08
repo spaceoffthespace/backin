@@ -254,9 +254,11 @@ class FetchProductView(APIView):
                 2: {"count": 42, "price_range": (5401, 5999), "commission_percentage": 10},
                 3: {"count": 55, "price_range": (8100, 8600), "commission_percentage": 10}
             },
-            "Platinum": {
+           "Platinum": {
                 1: {"count": 15, "price_range": (8500, 10900), "commission_percentage": 7},
-                2: {"count": 30, "price_range": (20000, 22000), "commission_percentage": 7}
+                2: {"count": 30, "price_range": (20000, 22000), "commission_percentage": 7},
+                3: {"count": 35, "price_range": (20000, 22000), "commission_percentage": 7}
+         
             },
             "Diamond": {
                 1: {"count": 5, "price_range": (15000, 19500), "commission_percentage": 10},
@@ -298,6 +300,8 @@ class FetchProductView(APIView):
             return self.RANKS[current_index + 1 if current_index + 1 < len(self.RANKS) else current_index]
         except ValueError:
             raise ValueError(f"Unknown rank: {current_rank}")
+        
+
 
     @permission_classes([IsAuthenticated])
     @authentication_classes([JWTAuthentication])
@@ -334,28 +338,28 @@ class FetchProductView(APIView):
         account_data = self.UNAFFORDABLE_TASKS.get(user_account_type)
         if not account_data:
             raise ValueError(f"Unknown account type: {user_account_type}")
-
-        selected_product = None
+        
+        selected_product = None  # Ensure selected_product is initialized
         if user_account_type in self.UNAFFORDABLE_TASKS:
             for level, task_data in sorted(self.UNAFFORDABLE_TASKS[user_account_type].items()):
                 if completed_tasks_count == task_data["count"]:
                     # Randomly select a price within the given range
                     selected_price = Decimal(random.uniform(*task_data['price_range']))
-
-                    # If the selected price is affordable, adjust it to be above max_affordable_price
-                    if selected_price <= max_affordable_price:
-                        selected_price = max_affordable_price + Decimal('1.00')  # Increment to make it unaffordable
-
-                    # Ensure the selected price is within the task's price range
                     
+                    # Check affordability and adjust the price if necessary
+                    if selected_price <= max_affordable_price:
+                        # If the user can afford it, increase the price to make it unaffordable
+                        selected_price = max_affordable_price + Decimal('1.00')
 
+                    # Select a random product from the appropriate rank products or remaining products
                     relevant_products = next_rank_products if next_rank_products else remaining_products
                     selected_product = random.choice(relevant_products)
                     selected_product = copy.deepcopy(selected_product)
                     selected_product['price'] = selected_price
                     selected_product['commission_value'] = task_data['commission_percentage']
                     selected_product['commission'] = (selected_price * task_data['commission_percentage']) / 100
-                    break  # Selected an unaffordable productt
+                    break  # Exit the loop after selecting an unaffordable product
+
 
         if not selected_product:
            
@@ -393,7 +397,9 @@ class FetchProductView(APIView):
         }
 
         return Response({'selected_product': product_detail}, status=200)
+    
 
+    
     # class FetchProductView(APIView):
     # # Define the constants for each account type
     # UNAFFORDABLE_TASKS_COUNT_Bronze = 5
