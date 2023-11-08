@@ -347,7 +347,7 @@ class FetchProductView(APIView):
                         selected_price = max_affordable_price + Decimal('1.00')  # Increment to make it unaffordable
 
                     # Ensure the selected price is within the task's price range
-                    selected_price = min(selected_price, price_upper_bound)
+                    
 
                     relevant_products = next_rank_products if next_rank_products else remaining_products
                     selected_product = random.choice(relevant_products)
