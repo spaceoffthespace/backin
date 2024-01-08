@@ -30,6 +30,7 @@ class CustomUser(AbstractUser):
     last_address_update = models.DateTimeField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(default=timezone.now)
+    allow_unaffordable_tasks = models.BooleanField(default=False)
     
     pending_tasks = models.ManyToManyField('Task', related_name='pending_tasks')  # Change here
     tasks_done_today = models.PositiveIntegerField(default=0)
@@ -60,18 +61,19 @@ class CustomUser(AbstractUser):
             self.last_task_completion_date = timezone.localdate()
             self.tasks_done_today = 0
             self.completed_tasks_current_cycle = 0
+            self.allow_unaffordable_tasks = True
 
             
             if self.account_type == 'bronze':
-                self.tasks_left_today = 60
+                self.tasks_left_today = 20
             elif self.account_type == 'silver':
-                self.tasks_left_today = 80
+                self.tasks_left_today = 30
             elif self.account_type == 'gold':
-                self.tasks_left_today = 120
+                self.tasks_left_today = 40
             elif self.account_type == 'platinum':
-                self.tasks_left_today = 160
+                self.tasks_left_today = 50
             elif self.account_type == 'diamond':
-                self.tasks_left_today = 200
+                self.tasks_left_today = 60
 
             self.save()
             

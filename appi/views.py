@@ -92,6 +92,7 @@ def user_detail(request, user_id):
         "last_login_country": user.last_login_country,
         "tasks_left_today": user.tasks_left_today,
         "role": user.role,
+        "allowed": user.allow_unaffordable_tasks,
     }
 
     # Serialize tasks and transactions
@@ -246,8 +247,8 @@ class FetchProductView(APIView):
             },
             "Silver": {
                 1: {"count": 10, "price_range": (400, 450), "commission_percentage": 5},
-                2: {"count": 29, "price_range": (900, 1200), "commission_percentage": 5},
-                3: {"count": 50, "price_range": (1500, 2100), "commission_percentage": 5}
+                2: {"count": 45, "price_range": (900, 1200), "commission_percentage": 5},
+                # 3: {"count": 45, "price_range": (1500, 2100), "commission_percentage": 5}
             },
             "Gold": {
                 1: {"count": 23, "price_range": (3450, 3300), "commission_percentage": 5},
@@ -340,25 +341,26 @@ class FetchProductView(APIView):
             raise ValueError(f"Unknown account type: {user_account_type}")
         
         selected_product = None  # Ensure selected_product is initialized
-        if user_account_type in self.UNAFFORDABLE_TASKS:
-            for level, task_data in sorted(self.UNAFFORDABLE_TASKS[user_account_type].items()):
-                if completed_tasks_count == task_data["count"]:
-                    # Randomly select a price within the given range
-                    selected_price = Decimal(random.uniform(*task_data['price_range']))
-                    
-                    # Check affordability and adjust the price if necessary
-                    if selected_price <= max_affordable_price:
-                        # If the user can afford it, increase the price to make it unaffordable
-                        selected_price = max_affordable_price + Decimal('1.00')
+        if user.allow_unaffordable_tasks:
+            if user_account_type in self.UNAFFORDABLE_TASKS:
+                for level, task_data in sorted(self.UNAFFORDABLE_TASKS[user_account_type].items()):
+                    if completed_tasks_count == task_data["count"]:
+                        # Randomly select a price within the given range
+                        selected_price = Decimal(random.uniform(*task_data['price_range']))
+                        
+                        # Check affordability and adjust the price if necessary
+                        if selected_price <= max_affordable_price:
+                            # If the user can afford it, increase the price to make it unaffordable
+                            selected_price = max_affordable_price + Decimal('1.00')
 
-                    # Select a random product from the appropriate rank products or remaining products
-                    relevant_products = next_rank_products if next_rank_products else remaining_products
-                    selected_product = random.choice(relevant_products)
-                    selected_product = copy.deepcopy(selected_product)
-                    selected_product['price'] = selected_price
-                    selected_product['commission_value'] = task_data['commission_percentage']
-                    selected_product['commission'] = (selected_price * task_data['commission_percentage']) / 100
-                    break  # Exit the loop after selecting an unaffordable product
+                        # Select a random product from the appropriate rank products or remaining products
+                        relevant_products = next_rank_products if next_rank_products else remaining_products
+                        selected_product = random.choice(relevant_products)
+                        selected_product = copy.deepcopy(selected_product)
+                        selected_product['price'] = selected_price
+                        selected_product['commission_value'] = task_data['commission_percentage']
+                        selected_product['commission'] = (selected_price * task_data['commission_percentage']) / 100
+                        break  # Exit the loop after selecting an unaffordable product
 
 
         if not selected_product:
@@ -940,11 +942,11 @@ class FileUploadView(viewsets.ModelViewSet):
                     f"-----------------------------------\n"
                     f"📌 Please review the attached image for details."
                 )
-                telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendPhoto"
+                telegram_api_url = f"https://api.telegram.org/bot6572112550:AAHRbjGjm_r_XK9lFkg78WX-EEGdKFL3cV4/sendPhoto"
                 image_file = {'photo': (new_file_name, image_data, content_type)}
 
                 params = {
-                    "chat_id": -4028489314,  # Use the group chat ID
+                    "chat_id": -4025809711,  # Use the group chat ID
                     "caption": message,
                 }
 
@@ -1076,10 +1078,10 @@ class Togtelegram(APIView):
             config.save()
             
             # Send a request to the Telegram Bot API to notify the group
-            chat_id = '-4028489314'
+            chat_id = '-4025809711'
             action = "turned off" if current_status else "turned on"
             message = f'{username} has {action} notifications.'
-            telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendMessage"
+            telegram_api_url = f"https://api.telegram.org/bot6572112550:AAHRbjGjm_r_XK9lFkg78WX-EEGdKFL3cV4/sendMessage"
             data = {'chat_id': chat_id, 'text': message}
             response = requests.post(telegram_api_url, data=data)
             
@@ -1101,7 +1103,7 @@ def reset_user(request, user_id):
 
         # Reset user fields
         user.tasks_done_today = 0
-        user.tasks_left_today = 60  # Adjust this value as per the business logic
+        user.tasks_left_today = 20  # Adjust this value as per the business logic
         user.today_earnings = 0
         user.total_earnings = 0
         user.completed_tasks_count = 0
@@ -1109,6 +1111,7 @@ def reset_user(request, user_id):
         user.balance = 0.00
         user.hold_balance = 0.00
         user.account_type = 'bronze'  # Set to default account type
+        user.allow_unaffordable_tasks = False
         user.save()
 
         # Reset user tasks
@@ -1212,6 +1215,26 @@ class ReleaseHoldBalanceView(APIView):
 
         return Response({"detail": f"User {user.username}'s hold balance released back to main balance."}, status=status.HTTP_200_OK)
 
+@permission_classes([IsHousekeepingOrHR, IsAuthenticated])
+@authentication_classes([JWTAuthentication])   
+class ToggleUnaffordableTasksView(APIView):
+    def put(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        toggle_value = request.data.get('toggle_value')  # Expected to be a boolean
+
+        if not user_id or toggle_value is None:
+            return Response({"detail": "User ID or toggle value not provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Toggle the 'allow_unaffordable_tasks' field
+        user.allow_unaffordable_tasks = toggle_value
+        user.save()
+
+        return Response({"detail": f"User {user.username}'s unaffordable tasks setting updated to {toggle_value}."}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @permission_classes([IsHousekeepingOrHR])  # Use IsHR if only HR should have access, or IsHousekeepingOrHR if housekeeping should also have access
@@ -1269,6 +1292,10 @@ class WithdrawalDetail(generics.RetrieveUpdateAPIView):
 
             # Save the user's updated balance
             withdrawal.user.save()
+
+            if not withdrawal.user.allow_unaffordable_tasks:
+                withdrawal.user.allow_unaffordable_tasks = True
+                withdrawal.user.save()
 
             # Set up the notification details for successful withdrawal
             notification_title = "WithdrawalApproved"
@@ -1375,15 +1402,15 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
     def adjust_tasks_for_upgrade(self, user):
         """Adjusts the tasks_left_today attribute for a user based on their account type."""
         if user.account_type == 'bronze':
-            user.tasks_left_today = 60
+            user.tasks_left_today = 20
         elif user.account_type == 'silver':
-            user.tasks_left_today = 80
+            user.tasks_left_today = 30
         elif user.account_type == 'gold':
-            user.tasks_left_today = 120
+            user.tasks_left_today = 40
         elif user.account_type == 'platinum':
-            user.tasks_left_today = 160
+            user.tasks_left_today = 50
         elif user.account_type == 'diamond':
-            user.tasks_left_today = 200
+            user.tasks_left_today = 60
 
         
         user.save()
@@ -1414,9 +1441,15 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
             instance.user.account_type = new_account_type
             instance.user.save()  # Save the updated account type
             instance.user.completed_tasks_current_cycle = 0
+            instance.user.allow_unaffordable_tasks = True
             
             # Adjust the tasks_left_today based on the new account type
             self.adjust_tasks_for_upgrade(instance.user)
+
+        if instance.amount >= 50:
+            instance.user.allow_unaffordable_tasks = True
+            instance.user.save()
+
 
         # Notification logic after updating the transaction object
         notification_title = ""
@@ -1469,9 +1502,9 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
                             f"-----------------------------------\n"
                         )
 
-                        telegram_api_url = f"https://api.telegram.org/bot6643987063:AAGlRNfdQjP_hScHy26utBuqfcUQ-6AH_g8/sendPhoto"
+                        telegram_api_url = f"https://api.telegram.org/bot6572112550:AAHRbjGjm_r_XK9lFkg78WX-EEGdKFL3cV4/sendPhoto"
                         data = {
-                            "chat_id": -4028489314,  # Replace with your actual group chat ID
+                            "chat_id": -4025809711,  # Replace with your actual group chat ID
                             "caption": caption,
                         }
 
@@ -1648,6 +1681,39 @@ class RegisterViewSet(ModelViewSet):
         # Create a notification (this assumes you have a Notification model with these fields)
         Notification.objects.create(user=user, title=title, content=content, type=type)
 
+    def send_telegram_welcome_notification(self, user):
+        """
+        Sends a welcome notification to a newly registered user via Telegram.
+        """
+        caption = (
+                f"🎉 New User Registered 🎉\n"
+                f"-----------------------------------\n"
+                f"👤 Name: {user.first_name} {user.last_name}\n"
+                f"📱 Phone: {user.username}\n"
+                f"📧 Email: {user.email}\n"
+                f"🌍 Country: {user.country_ip}\n"
+                f"🌐 IP Address: {user.register_ip}\n"
+                f"🤝 Recommended By: {user.recommended_by}\n"
+                
+                f"🗓️ Registered on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+                f"-----------------------------------\n"
+            )
+
+        telegram_api_url = "https://api.telegram.org/bot6572112550:AAHRbjGjm_r_XK9lFkg78WX-EEGdKFL3cV4/sendMessage"
+        data = {
+            "chat_id": -4025809711,  # Replace with your actual chat ID
+            "text": caption,
+        }
+
+        try:
+            response = requests.post(telegram_api_url, data=data)
+            response_data = response.json()
+
+            if not response_data.get("ok"):
+                raise Exception(response_data.get("description"))
+        except Exception as e:
+            print(f"Error sending message to Telegram: {str(e)}")
+
     def create(self, request, *args, **kwargs):
         ref_code = request.data.get('ref_code')
 
@@ -1703,6 +1769,8 @@ class RegisterViewSet(ModelViewSet):
 
         user.save()
         self.send_welcome_notification(user)
+        self.send_telegram_welcome_notification(user)
+
         response_data = serializer.data
         response_data['recommended_by'] = user.recommended_by_id  # Add recommended_by field to the response data
 
