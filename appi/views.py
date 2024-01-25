@@ -316,7 +316,21 @@ class FetchProductView(APIView):
             return Response({'error_code': 'INSUFFICIENT_BALANCE'}, status=400)
 
         if Task.objects.filter(user=user, status='pending').exists():
-            return Response({'error_code': 'PENDING_TASK'}, status=400)
+            pending_task = Task.objects.get(user=user, status='pending')
+            # Create a dictionary containing pending task details
+            pending_task_data = {
+                'task_id': pending_task.id,
+                'title': pending_task.task_type,
+                'commission_percentage': pending_task.commission_percentage,
+                'image': pending_task.image,
+                'task_type': pending_task.task_type,
+                'price': pending_task.price,
+                'commission': pending_task.commission,
+
+                
+                # Include other task details as needed
+            }
+            return Response({'error_code': 'PENDING_TASK', 'pending_task': pending_task_data}, status=400)
 
         if user.tasks_left_today == 0:
             return Response({'error_code': 'NO_TASKS_LEFT'}, status=400)
@@ -391,6 +405,7 @@ class FetchProductView(APIView):
         user.save()
 
         product_detail = {
+            'task_id': task.id,
             'title': selected_product['title'],
             'price': float(selected_price),
             'commission_percentage': float(selected_product['commission_value']),
