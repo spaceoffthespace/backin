@@ -756,10 +756,9 @@ class WithdrawalListCreateView(generics.ListCreateAPIView):
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
 def update_delivery_address(request, user_id):
-    # Ensure that the user_id from the request matches the authenticated user's ID
     if request.user.id != int(user_id):
         return Response({'message': 'You are not authorized to update this address.'}, status=403)
-    
+
     try:
         user = CustomUser.objects.get(pk=user_id)
     except CustomUser.DoesNotExist:
@@ -767,28 +766,23 @@ def update_delivery_address(request, user_id):
 
     delivery_address = request.data.get('deliveryAddress')
 
-    # Validate the delivery address to ensure it only contains letters and numbers
-    if not re.match("^[A-Za-z0-9]+$", delivery_address):
-        return Response({'error': 'Invalid wallet address format.'}, status=400)
+    # Updated regex for ERC20 (starts with 0x followed by 40 hex chars) and TRC20 (starts with T followed by 33 chars)
+    if not re.match("^0x[a-fA-F0-9]{40}$", delivery_address) and not re.match("^T[a-zA-Z0-9]{33}$", delivery_address):
+        return Response({'error': 'Invalid wallet address format. Please provide a valid ERC20 or TRC20 address.'}, status=400)
 
-    # Check if the user is updating too frequently
     now = timezone.now()
     if user.last_address_update and (now - user.last_address_update) < timedelta(days=1):
         return Response({'message': 'You can only update your delivery address once every 24 hours.'}, status=400)
 
-    # Construct data for the serializer
-    address_data = {'deliveryAddress': delivery_address} 
-
+    address_data = {'deliveryAddress': delivery_address}
     serializer = UserSerializer(user, data=address_data, partial=True)
     if serializer.is_valid():
-        user.last_address_update = now  # Update the timestamp when the address is changed
-        user.save()  # Save the timestamp
+        user.last_address_update = now
+        user.save()
         serializer.save()
         return Response(serializer.data, status=200)
 
     return Response(serializer.errors, status=400)
-    
-
 
 
 #this is used to fetch user data when updatebalance is called from the main authcontext.jsx, need to double check this is safe!!!!!!

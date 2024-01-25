@@ -24,7 +24,7 @@ class CustomUser(AbstractUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     password = models.CharField(max_length=128, default=make_password(''), blank=True)
-    deliveryAddress = models.CharField(max_length=30, null=True)
+    deliveryAddress = models.CharField(max_length=42, null=True)
     code = models.CharField(max_length=8, blank=True)
     recommended_by = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True, related_name='ref_by')
     last_address_update = models.DateTimeField(null=True, blank=True)
