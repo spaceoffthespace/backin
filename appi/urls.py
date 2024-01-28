@@ -86,7 +86,7 @@ urlpatterns = [
 
 
 
-                
+    path('create-demo-account/<int:user_id>/', create_demo_account, name='create_demo_account'),            
 
 
     path('update-delivery-address/<int:user_id>/', update_delivery_address, name='update_delivery_address'),

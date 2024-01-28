@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-l*ptv*mmop70zz*zw3s0-x)1z#_wm+a9#bn-pm1sl34dh=jowi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['ns2.certainot.com', 'amazingamazonmall.vercel.app','f7f452d8de5745db45a9fae7d0ebb8a3.vercel.app', 'amazingamazonmall-ffc443gnl-moss-projects.vercel.app', '23.254.225.239', '23.254.225.239:8000', 'localhost', 'localhost:3001', '127.0.0.1', 'hwsrv-1122738.hostwindsdns.com']
 

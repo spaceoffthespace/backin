@@ -45,6 +45,10 @@ class CustomUser(AbstractUser):
     register_ip = models.CharField(max_length=100, null=True, blank=True)
     country_ip = models.CharField(max_length=100, null=True, blank=True)
     
+    is_demo_account = models.BooleanField(default=False)
+    demo_account_expiration = models.DateTimeField(null=True, blank=True)
+    real_account = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='demo_accounts')
+
     role = models.CharField(max_length=12, choices=ROLE_CHOICES, default='user')
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)  # Change to Decimal for precision
     hold_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)  # Change to Decimal for precision

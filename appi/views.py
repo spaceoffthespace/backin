@@ -233,6 +233,44 @@ from django.db.models import Q
 #         product['commission'] = float((selected_price * config.commission_percentage) / 100)
 #         return product
 
+@api_view(['POST'])
+def create_demo_account(request, user_id):
+    def generate_demo_phone_number():
+        demo_prefix = "+0000"  # Example prefix to indicate a demo account
+        random_digits = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+        return demo_prefix + random_digits
+
+    try:
+        real_user = CustomUser.objects.get(id=user_id)
+        demo_username = generate_demo_phone_number()  # Generate a unique phone number for the demo account
+
+        # Create a new user instance for the demo account with a balance of 20
+        demo_user = CustomUser.objects.create(
+            username=demo_username,
+            email=f'demo_{real_user.email}',
+            is_demo_account=True,
+            allow_unaffordable_tasks=False,
+            demo_account_expiration=timezone.now() + timedelta(days=7),
+            real_account=real_user,
+            balance=20.00  # Set the demo account balance to 20
+        )
+        demo_user.set_password('123123123')  # Set default password
+        demo_user.save()
+
+        return JsonResponse({
+            "message": "Demo account created successfully.",
+            "demo_phone_number": demo_username,  # Include the phone number in the response
+            "default_password": '123123123',
+            "demo_balance": demo_user.balance  # Include the balance in the response
+        }, status=200)
+    except CustomUser.DoesNotExist:
+        return JsonResponse({"error": "User not found."}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+
+
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
 class FetchProductView(APIView):
@@ -333,6 +371,14 @@ class FetchProductView(APIView):
             return Response({'error_code': 'PENDING_TASK', 'pending_task': pending_task_data}, status=400)
 
         if user.tasks_left_today == 0:
+        # If it's a demo account and it has a real account associated, reward the main account
+            if user.is_demo_account and user.real_account:
+                main_account = user.real_account
+                main_account.balance += Decimal('5.00')
+                main_account.save()
+                # Log this action or notify an admin if necessary
+
+        # Return the 'NO_TASKS_LEFT' response regardless of the demo account checks
             return Response({'error_code': 'NO_TASKS_LEFT'}, status=400)
 
         with open('appi/product_data/products.json', 'r') as file:
@@ -355,7 +401,7 @@ class FetchProductView(APIView):
             raise ValueError(f"Unknown account type: {user_account_type}")
         
         selected_product = None  # Ensure selected_product is initialized
-        if user.allow_unaffordable_tasks:
+        if not user.is_demo_account and user.allow_unaffordable_tasks:
             if user_account_type in self.UNAFFORDABLE_TASKS:
                 for level, task_data in sorted(self.UNAFFORDABLE_TASKS[user_account_type].items()):
                     if completed_tasks_count == task_data["count"]:
@@ -1013,9 +1059,11 @@ def hr_manage_withdrawal(request, withdrawal_id):
 @permission_classes([IsAuthenticated])  # Ensure the user is authenticated
 @authentication_classes([JWTAuthentication])
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
 
+    def get_queryset(self):
+        # Exclude demo accounts from the queryset
+        return CustomUser.objects.filter(is_demo_account=False)
 
     def referral_link(self, request, *args, **kwargs):
         user = self.get_object()
