@@ -95,18 +95,33 @@ def user_detail(request, user_id):
         "allowed": user.allow_unaffordable_tasks,
     }
 
+    demo_accounts = user.demo_accounts.all()  # Assuming 'demo_accounts' is the related name for the reverse FK
+    demo_accounts_data = [
+        {
+            "id": demo_user.id,
+            "username": demo_user.username,
+            "demo_account_expiration": demo_user.demo_account_expiration
+            # Add more fields here as required
+        }
+        for demo_user in demo_accounts
+    ]
+
+    # Only add demo accounts data if there are any
+    if demo_accounts_data:
+        user_data["demo_accounts"] = demo_accounts_data
+
     # Serialize tasks and transactions
     tasks = Task.objects.filter(user=user)
     transactions = Transaction.objects.filter(user=user)
     withdrawals = Withdrawal.objects.filter(user=user)
     task_serializer = TaskSerializer(tasks, many=True)
     transaction_serializer = TransactionSerializer(transactions, many=True)
-    Withdrawal_serializer = WithdrawalSerializer(withdrawals, many=True)
+    withdrawal_serializer = WithdrawalSerializer(withdrawals, many=True)
 
     # Add tasks and transactions data to the user_data dictionary
     user_data["tasks"] = task_serializer.data
     user_data["transactions"] = transaction_serializer.data
-    user_data["withdrawals"] = Withdrawal_serializer.data
+    user_data["withdrawals"] = withdrawal_serializer.data
 
     return Response(user_data, status=200)
 
@@ -233,6 +248,7 @@ from django.db.models import Q
 #         product['commission'] = float((selected_price * config.commission_percentage) / 100)
 #         return product
 
+@permission_classes([IsHousekeepingOrHR]) 
 @api_view(['POST'])
 def create_demo_account(request, user_id):
     def generate_demo_phone_number():
