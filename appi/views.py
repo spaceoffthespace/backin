@@ -1448,7 +1448,6 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_account_type(amount, current_account_type):
         account_hierarchy = ['bronze', 'silver', 'gold', 'platinum', 'diamond']
 
-        # Determine the new account type based solely on transaction amount.
         if 20 <= amount < 100:
             prospective_account_type = 'bronze'
         elif 100 <= amount < 500:
@@ -1462,18 +1461,12 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
         else:
             prospective_account_type = 'bronze'
 
-        # Compare the current and prospective account types and return the higher one.
         if account_hierarchy.index(prospective_account_type) > account_hierarchy.index(current_account_type):
             return prospective_account_type
         else:
             return current_account_type
 
-        
-
-
-
     def adjust_tasks_for_upgrade(self, user):
-        """Adjusts the tasks_left_today attribute for a user based on their account type."""
         if user.account_type == 'bronze':
             user.tasks_left_today = 20
         elif user.account_type == 'silver':
@@ -1485,62 +1478,34 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
         elif user.account_type == 'diamond':
             user.tasks_left_today = 60
 
-        
         user.save()
-
-    
-
-       
 
     def perform_update(self, serializer):
         transaction = self.get_object()
         user = self.request.user
         if transaction.user.recommended_by != user and user.role != 'hr':
-            # If not, raise a permission denied exception
             raise PermissionDenied('You do not have permission to modify this transaction.')
 
-
-        instance = serializer.save()  # This saves the transaction object and returns the updated instance
-
-        # Store the user's current account type
-        current_account_type = instance.user.account_type
-
-        
-        # Determine new account type based on the transaction amount
-        new_account_type = self.get_account_type(instance.amount, current_account_type)
-
-        # Check if the user's current account type matches the new account type
-        if current_account_type != new_account_type:
-            instance.user.account_type = new_account_type
-            instance.user.save()  # Save the updated account type
-            instance.user.completed_tasks_current_cycle = 0
-            instance.user.allow_unaffordable_tasks = True
-            
-            # Adjust the tasks_left_today based on the new account type
-            self.adjust_tasks_for_upgrade(instance.user)
-
-        if instance.amount >= 50:
-            instance.user.allow_unaffordable_tasks = True
-            instance.user.save()
-
-
-        # Notification logic after updating the transaction object
-        notification_title = ""
-        notification_content = ""
-        notification_type = "info"
+        instance = serializer.save()
 
         if instance.status == 'approved':
-          
+            current_account_type = instance.user.account_type
+            new_account_type = self.get_account_type(instance.amount, current_account_type)
 
-            notification_title = 'Transaction Approved'
-            notification_content = f'Your transaction of {instance.amount} has been approved.'
-            notification_type = 'success'
-        elif instance.status == 'denied':
-            notification_title = 'Transaction Denied'
-            notification_content = f'Your transaction of {instance.amount} has been denied.'
-            notification_type = 'warning'
+            if current_account_type != new_account_type:
+                instance.user.account_type = new_account_type
+                instance.user.completed_tasks_current_cycle = 0
+                instance.user.allow_unaffordable_tasks = True
+                self.adjust_tasks_for_upgrade(instance.user)
 
-        # Create a notification for the user
+            if instance.amount >= 50:
+                instance.user.allow_unaffordable_tasks = True
+                instance.user.save()
+
+        notification_title = 'Transaction Approved' if instance.status == 'approved' else 'Transaction Denied'
+        notification_content = f'Your transaction of {instance.amount} has been {instance.status}.'
+        notification_type = 'success' if instance.status == 'approved' else 'warning'
+
         Notification.objects.create(
             user=instance.user,
             title=notification_title,
