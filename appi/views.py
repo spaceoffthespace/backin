@@ -385,6 +385,23 @@ class FetchProductView(APIView):
                 # Include other task details as needed
             }
             return Response({'error_code': 'PENDING_TASK', 'pending_task': pending_task_data}, status=400)
+        
+        if Task.objects.filter(user=user, status='frozen').exists():
+            pending_task = Task.objects.get(user=user, status='frozen')
+            # Create a dictionary containing pending task details
+            frozen_task_data = {
+                'task_id': pending_task.id,
+                'title': pending_task.task_type,
+                'commission_percentage': pending_task.commission_percentage,
+                'image': pending_task.image,
+                'task_type': pending_task.task_type,
+                'price': pending_task.price,
+                'commission': pending_task.commission,
+
+                
+                # Include other task details as needed
+            }
+            return Response({'error_code': 'FROZEN_TASK', 'frozen_task': frozen_task_data}, status=400)
 
         if user.tasks_left_today == 0:
         # If it's a demo account and it has a real account associated, reward the main account
