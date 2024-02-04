@@ -1233,7 +1233,34 @@ class HoldBalanceView(APIView):
 
         return Response({"detail": f"User {user.username}'s balance transferred to hold."}, status=status.HTTP_200_OK)
     
+class ChangeUserBalanceView(APIView):
+    permission_classes = [IsAuthenticated, IsHousekeepingOrHR]
+    authentication_classes = [JWTAuthentication]
 
+    def post(self, request, user_id):
+        try:
+            user = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        new_balance = request.data.get("new_balance")
+        if new_balance is None:
+            return Response(
+                {"error": "New balance not provided"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Optionally, add any validation logic for new_balance here
+
+        user.balance = new_balance
+        user.save()
+
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 @permission_classes([IsHousekeepingOrHR])  # Use IsHR if only HR should have access, or IsHousekeepingOrHR if housekeeping should also have access
 @permission_classes([IsAuthenticated])  # Ensure the user is authenticated
 @authentication_classes([JWTAuthentication])

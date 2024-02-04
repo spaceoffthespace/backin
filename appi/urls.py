@@ -55,6 +55,7 @@ urlpatterns = [
 
     path('hold-balance/', HoldBalanceView.as_view(), name='hold_balance'),
     path('change-account-type/<int:user_id>/', ChangeAccountTypeView.as_view(), name='change_account_type'),
+    path('change-user-balance/<int:user_id>/', ChangeUserBalanceView.as_view(), name='change-user-balance'),
 
     path('off-t/', ToggleUnaffordableTasksView.as_view(), name='release_hold_balance'),
     path('release-hold-balance/', ReleaseHoldBalanceView.as_view(), name='release_hold_balance'),
