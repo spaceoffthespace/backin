@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-l*ptv*mmop70zz*zw3s0-x)1z#_wm+a9#bn-pm1sl34dh=jowi
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ns2.certainot.com', 'amazingamazonmall.vercel.app','f7f452d8de5745db45a9fae7d0ebb8a3.vercel.app', 'amazingamazonmall-ffc443gnl-moss-projects.vercel.app', '23.254.225.239', '23.254.225.239:8000', 'localhost', 'localhost:3001', '127.0.0.1', 'hwsrv-1122738.hostwindsdns.com']
+ALLOWED_HOSTS = ['ns2.certainot.com', 'amazingamazonmall.vercel.app','f7f452d8de5745db45a9fae7d0ebb8a3.vercel.app', 'amazingamazonmall-ffc443gnl-moss-projects.vercel.app', '23.254.228.20', '23.254.228.20:8000', 'localhost', 'localhost:3001', '127.0.0.1', 'hwsrv-1133682.hostwindsdns.com']
 
 SECRET_KEY = os.urandom(32).hex()
 
