@@ -5,7 +5,7 @@ from .models import Transaction, Withdrawal, Notification
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'deliveryAddress', 'code', 'recommended_by', 'date_joined', 'account_type', 'today_earnings', 'total_earnings', 'role', 'register_ip', 'country_ip']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'deliveryAddress', 'code', 'recommended_by', 'date_joined', 'account_type', 'today_earnings', 'total_earnings', 'role', 'register_ip', 'country_ip', 'allow_unaffordable_tasks']
    
 
 class TaskSerializer(serializers.ModelSerializer):
